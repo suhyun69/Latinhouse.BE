@@ -1,0 +1,229 @@
+{
+  "nodes": [
+    {
+      "id": "start-1",
+      "type": "startNode",
+      "position": {
+        "x": 80,
+        "y": 200
+      },
+      "data": {
+        "label": "Start"
+      },
+      "measured": {
+        "width": 102,
+        "height": 52
+      }
+    },
+    {
+      "id": "httpRequestNode-1774794182012",
+      "type": "httpRequestNode",
+      "position": {
+        "x": 330,
+        "y": 200
+      },
+      "data": {
+        "label": "회원가입",
+        "method": "POST",
+        "url": "http://localhost:8080/api/v1/signup/email",
+        "headers": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "enabled": true
+          }
+        ],
+        "queryParams": [],
+        "body": "{\n  \"email\": \"{{vars.email}}\",\n  \"password\": \"{{vars.password}}\"\n}",
+        "bodyType": "json",
+        "assertions": []
+      },
+      "measured": {
+        "width": 366,
+        "height": 105
+      },
+      "selected": false
+    },
+    {
+      "id": "setVariableNode-1774794215927",
+      "type": "setVariableNode",
+      "position": {
+        "x": 59.64256961025259,
+        "y": 33.80928957648021
+      },
+      "data": {
+        "label": "Set Variable",
+        "variables": [
+          {
+            "key": "email",
+            "value": "laztwo@hanmail.net",
+            "enabled": true
+          },
+          {
+            "key": "password",
+            "value": "1234",
+            "enabled": true,
+            "type": "string"
+          }
+        ]
+      },
+      "measured": {
+        "width": 200,
+        "height": 113
+      },
+      "selected": false,
+      "dragging": false
+    },
+    {
+      "id": "httpRequestNode-1774794281909",
+      "type": "httpRequestNode",
+      "position": {
+        "x": 934.7670359846823,
+        "y": 104.23466513296924
+      },
+      "data": {
+        "label": "로그인",
+        "method": "POST",
+        "url": "http://localhost:8080/api/v1/auth/login/email",
+        "headers": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "enabled": true
+          }
+        ],
+        "queryParams": [],
+        "body": "{\n  \"email\": \"{{vars.email}}\",\n  \"password\": \"{{vars.password}}\"\n}",
+        "bodyType": "json",
+        "assertions": []
+      },
+      "measured": {
+        "width": 384,
+        "height": 105
+      },
+      "selected": false,
+      "dragging": false
+    },
+    {
+      "id": "variableExtractNode-1774794339825",
+      "type": "variableExtractNode",
+      "position": {
+        "x": 1473.1512830274453,
+        "y": 31.322421541025385
+      },
+      "data": {
+        "label": "Extract Variable",
+        "extractions": [
+          {
+            "variableName": "token",
+            "jsonPath": "response.data.token",
+            "sourceNodeId": ""
+          }
+        ]
+      },
+      "measured": {
+        "width": 207,
+        "height": 93
+      },
+      "selected": false,
+      "dragging": false
+    },
+    {
+      "id": "httpRequestNode-1774794368625",
+      "type": "httpRequestNode",
+      "position": {
+        "x": 1870.0640126530038,
+        "y": 178.23515116658393
+      },
+      "data": {
+        "label": "whoami",
+        "method": "GET",
+        "url": "http://localhost:8080/api/v1/user/whoami",
+        "headers": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "enabled": true
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{vars.token}}",
+            "enabled": true
+          }
+        ],
+        "queryParams": [],
+        "body": "",
+        "bodyType": "json",
+        "assertions": []
+      },
+      "measured": {
+        "width": 358,
+        "height": 105
+      },
+      "selected": false,
+      "dragging": false
+    }
+  ],
+  "edges": [
+    {
+      "animated": true,
+      "style": {
+        "stroke": "#6366f1",
+        "strokeWidth": 2
+      },
+      "source": "setVariableNode-1774794215927",
+      "target": "httpRequestNode-1774794182012",
+      "id": "xy-edge__setVariableNode-1774794215927-httpRequestNode-1774794182012"
+    },
+    {
+      "animated": true,
+      "style": {
+        "stroke": "#6366f1",
+        "strokeWidth": 2
+      },
+      "source": "start-1",
+      "target": "httpRequestNode-1774794182012",
+      "id": "xy-edge__start-1-httpRequestNode-1774794182012"
+    },
+    {
+      "animated": true,
+      "style": {
+        "stroke": "#6366f1",
+        "strokeWidth": 2
+      },
+      "source": "httpRequestNode-1774794182012",
+      "target": "httpRequestNode-1774794281909",
+      "id": "xy-edge__httpRequestNode-1774794182012-httpRequestNode-1774794281909"
+    },
+    {
+      "animated": true,
+      "style": {
+        "stroke": "#6366f1",
+        "strokeWidth": 2
+      },
+      "source": "setVariableNode-1774794215927",
+      "target": "httpRequestNode-1774794281909",
+      "id": "xy-edge__setVariableNode-1774794215927-httpRequestNode-1774794281909"
+    },
+    {
+      "animated": true,
+      "style": {
+        "stroke": "#6366f1",
+        "strokeWidth": 2
+      },
+      "source": "httpRequestNode-1774794281909",
+      "target": "variableExtractNode-1774794339825",
+      "id": "xy-edge__httpRequestNode-1774794281909-variableExtractNode-1774794339825"
+    },
+    {
+      "animated": true,
+      "style": {
+        "stroke": "#6366f1",
+        "strokeWidth": 2
+      },
+      "source": "variableExtractNode-1774794339825",
+      "target": "httpRequestNode-1774794368625",
+      "id": "xy-edge__variableExtractNode-1774794339825-httpRequestNode-1774794368625"
+    }
+  ]
+}
