@@ -26,10 +26,12 @@ public class ApiV1SignupController {
     @PostMapping("/email")
     @Operation(summary = "Signup", description = "by email")
     public ResponseEntity<EmailSignupWebResponse> emailSignup(@Valid @RequestBody EmailSignupWebRequest webReq) {
+
         EmailSignupAppRequest appReq = EmailSignupAppRequest.builder()
                 .email(webReq.getEmail())
                 .password(webReq.getPassword())
                 .build();
+
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(new EmailSignupWebResponse(signupUseCase.emailSignup(appReq)));
