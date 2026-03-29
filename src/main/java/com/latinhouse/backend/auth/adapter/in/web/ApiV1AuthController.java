@@ -8,22 +8,15 @@ import com.latinhouse.backend.auth.port.in.request.EmailLoginAppRequest;
 import com.latinhouse.backend.auth.port.in.response.LoginAppResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Arrays;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -36,66 +29,32 @@ public class ApiV1AuthController {
 
     @PostMapping("/login/email")
     @Operation(summary = "Login", description = "by email")
-    public ResponseEntity<LoginWebResponse> emailLogin(@Valid @RequestBody EmailLoginWebRequest webReq, HttpServletResponse response) {
+    public ResponseEntity<LoginWebResponse> emailLogin(@Valid @RequestBody EmailLoginWebRequest webReq) {
         EmailLoginAppRequest appReq = EmailLoginAppRequest.builder()
                 .email(webReq.getEmail())
                 .password(webReq.getPassword())
                 .build();
-
-        LoginAppResponse appRes = loginUseCase.emailLogin(appReq);
-
-        // accessToken은 쿠키로
-        ResponseCookie accessCookie = ResponseCookie.from("accessToken", appRes.getToken())
-                .httpOnly(true).secure(true).path("/").maxAge(15 * 60).build();
-        response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
-
-        // refreshToken도 쿠키로
-        ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", appRes.getRefreshToken())
-                .httpOnly(true).secure(true).path("/").maxAge(7 * 24 * 60 * 60).build();
-        response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
-
-        LoginWebResponse webRes = new LoginWebResponse(appRes);
-        return ResponseEntity.ok(webRes);
+        return ResponseEntity.ok(new LoginWebResponse(loginUseCase.emailLogin(appReq)));
     }
 
     @PostMapping("/auth/refresh")
-    public ResponseEntity<?> refreshToken(HttpServletRequest request, HttpServletResponse response) {
-
-        String refreshToken = extractCookieValue(request, "refreshToken");
-        LoginAppResponse appRes = loginUseCase.refresh(refreshToken);
-
-        ResponseCookie accessCookie = ResponseCookie.from("accessToken", appRes.getToken())
-                .httpOnly(true).secure(true).path("/").maxAge(15 * 60).build();
-        response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
-
-        LoginWebResponse webRes = new LoginWebResponse(appRes);
-        return ResponseEntity.ok(webRes);
+    public ResponseEntity<LoginWebResponse> refreshToken(HttpServletRequest request) {
+        String refreshToken = extractBearerToken(request);
+        return ResponseEntity.ok(new LoginWebResponse(loginUseCase.refresh(refreshToken)));
     }
 
     @PostMapping("/auth/logout")
-    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
-
+    public ResponseEntity<String> logout() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         logoutUseCase.logout(email);
-
-        // 쿠키 삭제
-        ResponseCookie deleteAccess = ResponseCookie.from("accessToken", "")
-                .httpOnly(true).secure(true).path("/").maxAge(0).build();
-        ResponseCookie deleteRefresh = ResponseCookie.from("refreshToken", "")
-                .httpOnly(true).secure(true).path("/").maxAge(0).build();
-
-        response.addHeader(HttpHeaders.SET_COOKIE, deleteAccess.toString());
-        response.addHeader(HttpHeaders.SET_COOKIE, deleteRefresh.toString());
-
         return ResponseEntity.ok("로그아웃 완료");
     }
 
-    private String extractCookieValue(HttpServletRequest request, String cookieName) {
-        if (request.getCookies() == null) return null;
-        return Arrays.stream(request.getCookies())
-                .filter(c -> cookieName.equals(c.getName()))
-                .findFirst()
-                .map(Cookie::getValue)
-                .orElse(null);
+    private String extractBearerToken(HttpServletRequest request) {
+        String header = request.getHeader("Authorization");
+        if (header != null && header.startsWith("Bearer ")) {
+            return header.substring(7);
+        }
+        return null;
     }
 }
