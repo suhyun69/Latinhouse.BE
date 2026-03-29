@@ -9,6 +9,7 @@ import com.latinhouse.backend.user.port.in.response.UserAppResponse;
 import com.latinhouse.backend.user.port.out.ReadUserPort;
 import com.latinhouse.backend.user.port.out.UpdateUserPort;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,12 +23,13 @@ public class UserService implements FindUserUseCase
 
     private final ReadUserPort readUserPort;
     private final UpdateUserPort updateUserPort;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public UserAppResponse findByEmail(String id) {
         return readUserPort.findByEmail(id)
                 .map(UserAppResponse::new)
-                .orElse(null);
+                .orElseThrow(UserNotFoundException::new);
     }
 
     @Override
@@ -41,7 +43,7 @@ public class UserService implements FindUserUseCase
     public UserAppResponse update(String id, UpdateUserAppRequest appReq) {
         User user = readUserPort.findByEmail(id)
                 .orElseThrow(UserNotFoundException::new);
-        user.setPassword(appReq.getPassword());
+        user.setPassword(passwordEncoder.encode(appReq.getPassword()));
 
         User updated = updateUserPort.update(user);
         return new UserAppResponse(updated);

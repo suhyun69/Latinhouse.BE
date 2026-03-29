@@ -2,7 +2,6 @@ package com.latinhouse.backend.auth.adapter.out.persistence.mapper;
 
 import com.latinhouse.backend.auth.adapter.out.persistence.entity.RefreshTokenJpaEntity;
 import com.latinhouse.backend.auth.domain.RefreshToken;
-import com.latinhouse.backend.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

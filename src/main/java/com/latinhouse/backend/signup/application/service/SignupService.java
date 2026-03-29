@@ -29,6 +29,6 @@ public class SignupService implements SignupUseCase {
                 .email(appReq.getEmail())
                 .password(passwordEncoder.encode(appReq.getPassword()))
                 .build();
-        return new SignupAppResponse(registerUserPort.register(user));
+        return new SignupAppResponse(registerUserPort.register(user).getEmail());
     }
 }

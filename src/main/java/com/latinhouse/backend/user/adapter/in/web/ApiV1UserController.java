@@ -35,7 +35,7 @@ public class ApiV1UserController {
 
     @GetMapping("/{email}")
     @Operation(summary = "Find User", description = "by Email")
-    public ResponseEntity<UserWebResponse> findByEmail(@RequestParam("email") String email) {
+    public ResponseEntity<UserWebResponse> findByEmail(@PathVariable("email") String email) {
 
         UserWebResponse response = new UserWebResponse(findUserUseCase.findByEmail(email));
 
@@ -55,7 +55,7 @@ public class ApiV1UserController {
 
     @PutMapping("/{id}")
     @Operation(summary = "Update User", description = "Update User")
-    public ResponseEntity<UserWebResponse> update(@RequestParam("id") String id, @Valid @RequestBody UpdateUserWebRequest webReq) {
+    public ResponseEntity<UserWebResponse> update(@PathVariable("id") String id, @Valid @RequestBody UpdateUserWebRequest webReq) {
 
         UpdateUserAppRequest appReq = UpdateUserAppRequest.builder()
                 .password(webReq.getPassword())

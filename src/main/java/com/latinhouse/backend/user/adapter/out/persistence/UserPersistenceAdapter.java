@@ -3,8 +3,6 @@ package com.latinhouse.backend.user.adapter.out.persistence;
 import com.latinhouse.backend.user.adapter.out.persistence.entity.UserJpaEntity;
 import com.latinhouse.backend.user.adapter.out.persistence.mapper.UserMapper;
 import com.latinhouse.backend.user.adapter.out.persistence.repository.UserRepository;
-import com.latinhouse.backend.signup.port.out.CheckDuplicateEmailPort;
-import com.latinhouse.backend.signup.port.out.RegisterUserPort;
 import com.latinhouse.backend.user.domain.User;
 import com.latinhouse.backend.user.port.out.ReadUserPort;
 import com.latinhouse.backend.user.port.out.UpdateUserPort;
@@ -16,25 +14,10 @@ import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
-public class UserPersistenceAdapter implements RegisterUserPort
-        , CheckDuplicateEmailPort
-        , ReadUserPort
-        , UpdateUserPort
-{
+public class UserPersistenceAdapter implements ReadUserPort, UpdateUserPort {
 
     private final UserMapper userMapper;
     private final UserRepository userRepository;
-
-    @Override
-    public boolean existsByEmail(String email) {
-        return userRepository.existsByEmail(email);
-    }
-
-    @Override
-    public User register(User user) {
-        UserJpaEntity userT = userMapper.mapToJpaEntity(user);
-        return userMapper.mapToDomainEntity(userRepository.save(userT));
-    }
 
     @Override
     public List<User> findAll() {
