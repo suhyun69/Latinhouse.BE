@@ -8,19 +8,18 @@ import com.latinhouse.backend.auth.port.in.response.LoginAppResponse;
 import com.latinhouse.backend.auth.port.out.CreateTokenPort;
 import com.latinhouse.backend.auth.port.out.DeleteTokenPort;
 import com.latinhouse.backend.auth.port.out.SelectTokenPort;
+import com.latinhouse.backend.auth.port.out.CredentialVerifierPort;
 import com.latinhouse.backend.auth.port.out.TokenPort;
 import com.latinhouse.backend.global.exception.CustomException;
 import com.latinhouse.backend.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class AuthService implements LoginUseCase, LogoutUseCase {
 
-    private final AuthenticationManager authenticationManager;
+    private final CredentialVerifierPort credentialVerifierPort;
     private final TokenPort tokenPort;
     private final CreateTokenPort createTokenPort;
     private final SelectTokenPort selectTokenPort;
@@ -29,8 +28,7 @@ public class AuthService implements LoginUseCase, LogoutUseCase {
     @Override
     public LoginAppResponse emailLogin(EmailLoginAppRequest appReq) {
 
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(appReq.getEmail(), appReq.getPassword()));
+        credentialVerifierPort.verify(appReq.getEmail(), appReq.getPassword());
 
         String token = tokenPort.generateToken(appReq.getEmail());
         String refreshToken = tokenPort.generateRefreshToken(appReq.getEmail());

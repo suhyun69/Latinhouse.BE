@@ -1,6 +1,5 @@
-package com.latinhouse.backend.user.adapter.out.persistence.repository;
+package com.latinhouse.backend.infrastructure.persistence.user;
 
-import com.latinhouse.backend.user.adapter.out.persistence.entity.UserJpaEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

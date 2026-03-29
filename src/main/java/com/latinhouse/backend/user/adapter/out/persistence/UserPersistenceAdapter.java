@@ -1,8 +1,8 @@
 package com.latinhouse.backend.user.adapter.out.persistence;
 
-import com.latinhouse.backend.user.adapter.out.persistence.entity.UserJpaEntity;
-import com.latinhouse.backend.user.adapter.out.persistence.mapper.UserMapper;
-import com.latinhouse.backend.user.adapter.out.persistence.repository.UserRepository;
+import com.latinhouse.backend.infrastructure.persistence.user.UserJpaEntity;
+import com.latinhouse.backend.infrastructure.persistence.user.UserMapper;
+import com.latinhouse.backend.infrastructure.persistence.user.UserRepository;
 import com.latinhouse.backend.user.domain.User;
 import com.latinhouse.backend.user.port.out.ReadUserPort;
 import com.latinhouse.backend.user.port.out.UpdateUserPort;

@@ -1,4 +1,4 @@
-package com.latinhouse.backend.user.adapter.out.persistence.entity;
+package com.latinhouse.backend.infrastructure.persistence.user;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "users")
 @Data
-@Builder // mapToJpaEntity
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserJpaEntity {

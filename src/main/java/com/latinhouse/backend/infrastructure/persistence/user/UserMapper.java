@@ -1,6 +1,5 @@
-package com.latinhouse.backend.user.adapter.out.persistence.mapper;
+package com.latinhouse.backend.infrastructure.persistence.user;
 
-import com.latinhouse.backend.user.adapter.out.persistence.entity.UserJpaEntity;
 import com.latinhouse.backend.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

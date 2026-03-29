@@ -1,10 +1,10 @@
 package com.latinhouse.backend.signup.adapter.out.persistence;
 
+import com.latinhouse.backend.infrastructure.persistence.user.UserJpaEntity;
+import com.latinhouse.backend.infrastructure.persistence.user.UserMapper;
+import com.latinhouse.backend.infrastructure.persistence.user.UserRepository;
 import com.latinhouse.backend.signup.port.out.CheckDuplicateEmailPort;
 import com.latinhouse.backend.signup.port.out.RegisterUserPort;
-import com.latinhouse.backend.user.adapter.out.persistence.entity.UserJpaEntity;
-import com.latinhouse.backend.user.adapter.out.persistence.mapper.UserMapper;
-import com.latinhouse.backend.user.adapter.out.persistence.repository.UserRepository;
 import com.latinhouse.backend.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
