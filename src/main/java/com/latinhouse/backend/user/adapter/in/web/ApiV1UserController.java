@@ -31,9 +31,7 @@ public class ApiV1UserController {
 
         UserWebResponse response = new UserWebResponse(findUserUseCase.findByEmail(email));
 
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(response);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping()
@@ -44,9 +42,7 @@ public class ApiV1UserController {
                 .map(UserWebResponse::new)
                 .collect(Collectors.toList());
 
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(response);
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/{id}")
