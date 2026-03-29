@@ -1,4 +1,4 @@
-package com.latinhouse.backend.user.port.in.request;
+package com.latinhouse.backend.signup.port.in.request;
 
 import lombok.Builder;
 import lombok.Value;

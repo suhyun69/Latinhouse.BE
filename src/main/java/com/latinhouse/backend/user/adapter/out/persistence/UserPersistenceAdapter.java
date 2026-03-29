@@ -3,8 +3,8 @@ package com.latinhouse.backend.user.adapter.out.persistence;
 import com.latinhouse.backend.user.adapter.out.persistence.entity.UserJpaEntity;
 import com.latinhouse.backend.user.adapter.out.persistence.mapper.UserMapper;
 import com.latinhouse.backend.user.adapter.out.persistence.repository.UserRepository;
+import com.latinhouse.backend.signup.port.out.RegisterUserPort;
 import com.latinhouse.backend.user.domain.User;
-import com.latinhouse.backend.user.port.out.CreateUserPort;
 import com.latinhouse.backend.user.port.out.ReadUserPort;
 import com.latinhouse.backend.user.port.out.UpdateUserPort;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +15,7 @@ import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
-public class UserPersistenceAdapter implements CreateUserPort
+public class UserPersistenceAdapter implements RegisterUserPort
         , ReadUserPort
         , UpdateUserPort
 {
@@ -24,7 +24,7 @@ public class UserPersistenceAdapter implements CreateUserPort
     private final UserRepository userRepository;
 
     @Override
-    public User create(User user) {
+    public User register(User user) {
         UserJpaEntity userT = userMapper.mapToJpaEntity(user);
         return userMapper.mapToDomainEntity(userRepository.save(userT));
     }

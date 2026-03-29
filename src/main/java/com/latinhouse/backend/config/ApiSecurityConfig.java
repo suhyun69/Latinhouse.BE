@@ -30,6 +30,7 @@ public class ApiSecurityConfig {
                 )
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/api/*/auth/**").permitAll()
+                        .requestMatchers("/api/*/signup/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);

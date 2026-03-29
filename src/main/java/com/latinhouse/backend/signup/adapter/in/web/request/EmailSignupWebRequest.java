@@ -1,4 +1,4 @@
-package com.latinhouse.backend.auth.adapter.in.web.request;
+package com.latinhouse.backend.signup.adapter.in.web.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
