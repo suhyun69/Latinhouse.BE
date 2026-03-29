@@ -1,3 +1,6 @@
+# IDE
+.idea/
+
 # Gradle build artifacts
 .gradle/
 build/
