@@ -1,8 +1,12 @@
+custom:
+  jwt:
+    secretKey: Z3VkU3VyZVN1cGVyU2VjdXJlU2VjcmV0S2V5MTIzIT8k
+
 spring:
   application:
     name: backend
   profiles:
-    active: dev
+    active: local
     include: secret
   jpa:
     hibernate:
