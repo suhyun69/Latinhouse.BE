@@ -11,6 +11,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,6 +25,13 @@ public class ApiV1UserController {
 
     private final FindUserUseCase findUserUseCase;
     private final UpdateUserUseCase updateUserUseCase;
+
+    @GetMapping("/whoami")
+    @Operation(summary = "Get current user", description = "Returns the currently authenticated user's info")
+    public ResponseEntity<UserWebResponse> whoami() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        return ResponseEntity.ok(new UserWebResponse(findUserUseCase.findByEmail(email)));
+    }
 
     @GetMapping("/{email}")
     @Operation(summary = "Find User", description = "by Email")
