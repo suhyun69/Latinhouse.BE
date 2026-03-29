@@ -24,9 +24,9 @@ public class OpenApiConfig {
         SecurityRequirement schemaRequirement = new SecurityRequirement().addList("bearerAuth");
 
         Info info = new Info()
-                .title("Demo Project API Document")
+                .title("Latinhouse Backend API Document")
                 .version("v0.0.1")
-                .description("Demo 프로젝트의 API 명세서입니다.");
+                .description("Latinhouse 프로젝트의 Backend API 명세서입니다.");
 
         return new OpenAPI()
                 .components(new Components().addSecuritySchemes("bearerAuth", securityScheme))
