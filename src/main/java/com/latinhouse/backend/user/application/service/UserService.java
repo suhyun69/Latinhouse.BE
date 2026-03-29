@@ -1,5 +1,6 @@
 package com.latinhouse.backend.user.application.service;
 
+import com.latinhouse.backend.global.exception.UserNotFoundException;
 import com.latinhouse.backend.user.domain.User;
 import com.latinhouse.backend.user.port.in.FindUserUseCase;
 import com.latinhouse.backend.user.port.in.SignupUseCase;
@@ -11,10 +12,10 @@ import com.latinhouse.backend.user.port.out.CreateUserPort;
 import com.latinhouse.backend.user.port.out.ReadUserPort;
 import com.latinhouse.backend.user.port.out.UpdateUserPort;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,10 +28,15 @@ public class UserService implements SignupUseCase
     private final CreateUserPort createUserPort;
     private final ReadUserPort readUserPort;
     private final UpdateUserPort updateUserPort;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public UserAppResponse emailSignup(EmailSignupAppRequest appReq) {
-        return new UserAppResponse(createUserPort.create(appReq));
+        User user = User.builder()
+                .email(appReq.getEmail())
+                .password(passwordEncoder.encode(appReq.getPassword()))
+                .build();
+        return new UserAppResponse(createUserPort.create(user));
     }
 
     @Override
@@ -49,12 +55,8 @@ public class UserService implements SignupUseCase
 
     @Override
     public UserAppResponse update(String id, UpdateUserAppRequest appReq) {
-        Optional<User> optionalUser = readUserPort.findByEmail(id);
-        if (optionalUser.isEmpty()) {
-            throw new RuntimeException("User not found");
-        }
-
-        User user = optionalUser.get();
+        User user = readUserPort.findByEmail(id)
+                .orElseThrow(UserNotFoundException::new);
         user.setPassword(appReq.getPassword());
 
         User updated = updateUserPort.update(user);

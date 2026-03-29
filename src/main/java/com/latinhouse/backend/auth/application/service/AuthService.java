@@ -1,6 +1,5 @@
 package com.latinhouse.backend.auth.application.service;
 
-import com.latinhouse.backend.auth.port.in.LoginUseCase;
 import com.latinhouse.backend.auth.domain.RefreshToken;
 import com.latinhouse.backend.auth.port.in.LoginUseCase;
 import com.latinhouse.backend.auth.port.in.LogoutUseCase;
@@ -12,14 +11,10 @@ import com.latinhouse.backend.auth.port.out.SelectTokenPort;
 import com.latinhouse.backend.global.exception.CustomException;
 import com.latinhouse.backend.global.exception.ErrorCode;
 import com.latinhouse.backend.security.JwtUtil;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
-
-import java.util.Arrays;
 
 @Service
 @RequiredArgsConstructor
@@ -49,20 +44,15 @@ public class AuthService implements LoginUseCase, LogoutUseCase {
     }
 
     @Override
-    public LoginAppResponse refresh(HttpServletRequest request) {
+    public LoginAppResponse refresh(String refreshToken) {
 
-        String refreshToken = Arrays.stream(request.getCookies())
-                .filter(c -> c.getName().equals("refreshToken"))
-                .findFirst()
-                .map(Cookie::getValue)
-                .orElse(null);
         if (refreshToken == null || !jwtUtil.validateToken(refreshToken)) {
             throw new CustomException(ErrorCode.UNAUTHORIZED, "Refresh token invalid");
         }
 
         String email = jwtUtil.extractUsername(refreshToken);
         RefreshToken saved = selectTokenPort.findRefreshTokenByEmail(email).orElse(null);
-        if (saved == null || !saved.equals(refreshToken)) {
+        if (saved == null || !saved.getRefreshToken().equals(refreshToken)) {
             throw new CustomException(ErrorCode.UNAUTHORIZED, "Refresh token mismatch");
         }
 
@@ -74,9 +64,7 @@ public class AuthService implements LoginUseCase, LogoutUseCase {
     }
 
     @Override
-    public void logout(HttpServletRequest request) {
-
-        String email = jwtUtil.extractUsernameFromRequest(request);
+    public void logout(String email) {
         deleteTokenPort.deleteRefreshToken(email);
     }
 }

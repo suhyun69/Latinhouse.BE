@@ -4,8 +4,6 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -75,26 +73,6 @@ public class JwtUtil {
                 .setExpiration(new Date(System.currentTimeMillis() + 1000L * 60 * 60 * 24 * 7)) // 7일
                 .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()), SignatureAlgorithm.HS256)
                 .compact();
-    }
-
-    public String extractUsernameFromRequest(HttpServletRequest request) {
-        String token = null;
-
-        // 쿠키에서 accessToken 추출
-        if (request.getCookies() != null) {
-            for (Cookie cookie : request.getCookies()) {
-                if ("accessToken".equals(cookie.getName())) {
-                    token = cookie.getValue();
-                    break;
-                }
-            }
-        }
-
-        if (token == null) {
-            throw new IllegalArgumentException("Access token not found in cookies");
-        }
-
-        return extractUsername(token); // 기존 메서드 사용
     }
 
 }

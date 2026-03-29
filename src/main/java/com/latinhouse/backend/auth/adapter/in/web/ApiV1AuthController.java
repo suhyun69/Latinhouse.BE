@@ -12,19 +12,21 @@ import com.latinhouse.backend.user.port.in.SignupUseCase;
 import com.latinhouse.backend.user.port.in.request.EmailSignupAppRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Arrays;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -35,7 +37,6 @@ public class ApiV1AuthController {
     private final SignupUseCase signupUseCase;
     private final LoginUseCase loginUseCase;
     private final LogoutUseCase logoutUseCase;
-    private final PasswordEncoder passwordEncoder;
 
     @PostMapping("/signup/email")
     @Operation(summary = "Signup", description = "by email")
@@ -43,7 +44,7 @@ public class ApiV1AuthController {
 
         EmailSignupAppRequest appReq = EmailSignupAppRequest.builder()
                 .email(webReq.getEmail())
-                .password(passwordEncoder.encode(webReq.getPassword()))
+                .password(webReq.getPassword())
                 .build();
         EmailSignupWebResponse response = new EmailSignupWebResponse(signupUseCase.emailSignup(appReq));
 
@@ -81,22 +82,22 @@ public class ApiV1AuthController {
     @PostMapping("/auth/refresh")
     public ResponseEntity<?> refreshToken(HttpServletRequest request, HttpServletResponse response) {
 
-        LoginAppResponse appRes = loginUseCase.refresh(request);
+        String refreshToken = extractCookieValue(request, "refreshToken");
+        LoginAppResponse appRes = loginUseCase.refresh(refreshToken);
 
-        ResponseCookie accessCookie = ResponseCookie.from("accessToken", appRes.getRefreshToken())
+        ResponseCookie accessCookie = ResponseCookie.from("accessToken", appRes.getToken())
                 .httpOnly(true).secure(true).path("/").maxAge(15 * 60).build();
         response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
 
         LoginWebResponse webRes = new LoginWebResponse(appRes);
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(webRes);
+        return ResponseEntity.ok(webRes);
     }
 
     @PostMapping("/auth/logout")
     public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
 
-        logoutUseCase.logout(request);
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        logoutUseCase.logout(email);
 
         // 쿠키 삭제
         ResponseCookie deleteAccess = ResponseCookie.from("accessToken", "")
@@ -108,5 +109,14 @@ public class ApiV1AuthController {
         response.addHeader(HttpHeaders.SET_COOKIE, deleteRefresh.toString());
 
         return ResponseEntity.ok("로그아웃 완료");
+    }
+
+    private String extractCookieValue(HttpServletRequest request, String cookieName) {
+        if (request.getCookies() == null) return null;
+        return Arrays.stream(request.getCookies())
+                .filter(c -> cookieName.equals(c.getName()))
+                .findFirst()
+                .map(Cookie::getValue)
+                .orElse(null);
     }
 }
